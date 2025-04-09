@@ -5,25 +5,31 @@ class Player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.angle = 0  # Angle of the ship
+        self.angle = -90  # Start with no rotation applied
         self.velocity_x = 0  # Horizontal velocity
         self.velocity_y = 0  # Vertical velocity
-        self.color = (255, 255, 255)  # White color
-        self.size = 10  # Size of the triangle ship
+        self.size = 25  # Size of the ship (used for scaling)
+        
+        # Load the ship sprite
+        self.original_image = pygame.image.load("assets/player_ship.png").convert_alpha()
+        self.original_image = pygame.transform.scale(self.original_image, (self.size * 2, self.size * 2))  # Scale the sprite
+        
+        # Rotate the sprite to face right initially
+        self.original_image = pygame.transform.rotate(self.original_image, -90)
+        self.image = self.original_image  # Keep a reference to the rotated image
 
     def update(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            self.angle += 5  # Rotate left
         if keys[pygame.K_RIGHT]:
-            self.angle -= 5  # Rotate right
+            self.angle += 5  # Rotate left (counterclockwise)
+        if keys[pygame.K_LEFT]:
+            self.angle -= 5  # Rotate right (clockwise)
         if keys[pygame.K_UP]:  # Thrust forward
-            # Apply thrust in the direction the ship is facing
             thrust = 0.1  # Small thrust for fine control
-            self.velocity_x += thrust * math.cos(math.radians(self.angle))
-            self.velocity_y -= thrust * math.sin(math.radians(self.angle))
+            # Apply thrust in the direction of the ship's angle
+            self.velocity_x += thrust * math.cos(math.radians(-self.angle))
+            self.velocity_y -= thrust * math.sin(math.radians(-self.angle))
         if keys[pygame.K_DOWN]:  # Decelerate
-            # Gradually reduce velocity
             self.velocity_x *= 0.98  # Apply friction
             self.velocity_y *= 0.98
 
@@ -36,12 +42,7 @@ class Player:
         self.y %= 600  # Assuming screen height is 600
 
     def draw(self, screen):
-        # Draw the triangle ship
-        tip_x = self.x + self.size * math.cos(math.radians(self.angle))
-        tip_y = self.y - self.size * math.sin(math.radians(self.angle))
-        left_x = self.x + self.size * math.cos(math.radians(self.angle + 120))
-        left_y = self.y - self.size * math.sin(math.radians(self.angle + 120))
-        right_x = self.x + self.size * math.cos(math.radians(self.angle - 120))
-        right_y = self.y - self.size * math.sin(math.radians(self.angle - 120))
-
-        pygame.draw.polygon(screen, self.color, [(tip_x, tip_y), (left_x, left_y), (right_x, right_y)])
+        # Rotate the original sprite based on the angle
+        self.image = pygame.transform.rotate(self.original_image, -self.angle)
+        rect = self.image.get_rect(center=(int(self.x), int(self.y)))
+        screen.blit(self.image, rect)

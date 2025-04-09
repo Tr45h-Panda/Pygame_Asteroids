@@ -6,7 +6,7 @@ class Bullet:
         self.x = x
         self.y = y
         self.angle = angle
-        self.speed = 5  # Speed of the bullet
+        self.speed = 10  # Speed of the bullet
         self.color = (255, 255, 255)  # White color
         self.radius = 2  # Size of the bullet
 
