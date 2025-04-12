@@ -2,11 +2,12 @@ import pygame
 import math
 
 class Bullet:
-    def __init__(self, x, y, angle):
+    def __init__(self, x, y, angle, source="player"):
         self.x = x
         self.y = y
         self.angle = angle
         self.speed = 10  # Speed of the bullet
+        self.source = source  # "player" or "spaceship"
         self.color = (255, 255, 255)  # White color
         self.radius = 2  # Size of the bullet
 
